@@ -1,0 +1,5 @@
+[geoserverprimary]
+192.168.99.99 ansible_user=vagrant ansible_ssh_private_key_file="keys/geoserverprimary/private_key"
+
+[geoserversecundary]
+192.168.99.98 ansible_user=vagrant ansible_ssh_private_key_file="keys/geoserversecundary/private_key"

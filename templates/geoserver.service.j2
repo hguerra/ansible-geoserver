@@ -1,0 +1,11 @@
+[Unit]
+Description={{ geoserver_service_description }}
+After=syslog.target
+
+[Service]
+User=geoserver
+ExecStart={{ geoserver_service_start_script }}
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

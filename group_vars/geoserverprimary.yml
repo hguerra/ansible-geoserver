@@ -1,0 +1,14 @@
+---
+jetty_port: 8080 
+geoserver_stop_key: primary
+geoserver_stop_port: 8079
+geoserver_options: -Xms128M -Xmx756M
+geoserver_home: /usr/local/geoserver/primary
+geoserver_shared: /var/local/geoserver
+geoserver_data_dir: /var/local/geoserver/data_dir
+geoserver_geowebcache: /var/local/geoserver/geowebcache/gwc
+geoserver_log_location: /var/local/geoserver/logs
+geoserver_log_name: /var/local/geoserver/logs/primary.log
+
+geoserver_service_description: GeoServer Primary
+geoserver_service_start_script: /usr/local/geoserver/primary/bin/startup.sh

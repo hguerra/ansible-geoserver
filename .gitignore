@@ -1,0 +1,3 @@
+.vagrant
+keys/*/*_key
+files/*.tar.gz

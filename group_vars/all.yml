@@ -1,0 +1,4 @@
+---
+jetty_threads_min: 20
+jetty_threads_max: 50
+jetty_threads_timeout: 60000
