@@ -4,12 +4,12 @@
 #
 # $Id$
 # -----------------------------------------------------------------------------
-export GEOSERVER_HOME={{ geoserver_home }}
-GEOSERVER_STOP_KEY={{ geoserver_stop_key }}
-GEOSERVER_STOP_PORT={{ geoserver_stop_port }}
+export GEOSERVER_HOME={{ secundary_geoserver_home }}_{{ item }}
+GEOSERVER_STOP_KEY={{ secundary_geoserver_stop_key }}_{{ item }}
+GEOSERVER_STOP_PORT={{ item - 10 }}
 
 GEOSERVER_OPTS="-server \
- {{ geoserver_options }} \
+ {{ secundary_geoserver_options }} \
  -XX:SoftRefLRUPolicyMSPerMB=36000 -XX:+UseParallelGC \
  -XX:PerfDataSamplingInterval=500 -XX:NewRatio=2 \
  -XX:-UseContainerSupport -XX:InitialRAMPercentage=50 -XX:MaxRAMPercentage=70 \

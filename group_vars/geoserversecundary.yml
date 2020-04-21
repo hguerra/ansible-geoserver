@@ -1,0 +1,13 @@
+---
+secundary_geoserver_shared: /var/local/geoserver
+secundary_geoserver_data_dir: /var/local/geoserver/data_dir
+secundary_geoserver_geowebcache: /var/local/geoserver/geowebcache/gwc
+secundary_geoserver_log_location: /var/local/geoserver/logs
+secundary_geoserver_options: -Xms128M -Xmx756M
+secundary_nginx_log_location: /var/local/nginx/logs
+
+secundary_geoserver_nodes_jetty_ports: [8081, 8082]
+secundary_geoserver_home: /usr/local/geoserver/secundary 
+secundary_geoserver_stop_key: secundary
+secundary_geoserver_log_name: /var/local/geoserver/logs/secundary
+secundary_geoserver_service_description: GeoServer Secundary

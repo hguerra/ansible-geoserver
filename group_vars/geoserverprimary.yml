@@ -1,14 +1,14 @@
 ---
-jetty_port: 8080 
-geoserver_stop_key: primary
-geoserver_stop_port: 8079
-geoserver_options: -Xms128M -Xmx756M
-geoserver_home: /usr/local/geoserver/primary
-geoserver_shared: /var/local/geoserver
-geoserver_data_dir: /var/local/geoserver/data_dir
-geoserver_geowebcache: /var/local/geoserver/geowebcache/gwc
-geoserver_log_location: /var/local/geoserver/logs
-geoserver_log_name: /var/local/geoserver/logs/primary.log
+primary_geoserver_shared: /var/local/geoserver
+primary_geoserver_data_dir: /var/local/geoserver/data_dir
+primary_geoserver_geowebcache: /var/local/geoserver/geowebcache/gwc
+primary_geoserver_log_location: /var/local/geoserver/logs
+primary_geoserver_options: -Xms128M -Xmx756M
 
-geoserver_service_description: GeoServer Primary
-geoserver_service_start_script: /usr/local/geoserver/primary/bin/startup.sh
+primary_geoserver_home: /usr/local/geoserver/primary
+primary_geoserver_jetty_port: 8080 
+primary_geoserver_stop_key: primary
+primary_geoserver_stop_port: 8079
+primary_geoserver_log_name: /var/local/geoserver/logs/primary.log
+primary_geoserver_service_description: GeoServer Primary
+primary_geoserver_service_start_script: /usr/local/geoserver/primary/bin/startup.sh

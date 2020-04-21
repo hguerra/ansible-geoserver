@@ -1,0 +1,11 @@
+[Unit]
+Description={{ secundary_geoserver_service_description }} {{ item }}
+After=syslog.target
+
+[Service]
+User=geoserver
+ExecStart={{ secundary_geoserver_home }}_{{ item }}/bin/startup.sh
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

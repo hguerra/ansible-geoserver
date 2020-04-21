@@ -1,10 +1,10 @@
 [Unit]
-Description={{ geoserver_service_description }}
+Description={{ primary_geoserver_service_description }}
 After=syslog.target
 
 [Service]
 User=geoserver
-ExecStart={{ geoserver_service_start_script }}
+ExecStart={{ primary_geoserver_service_start_script }}
 SuccessExitStatus=143
 
 [Install]

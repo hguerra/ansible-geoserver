@@ -2,8 +2,7 @@
 # Configuracao GeoServer: PRD
 #################################################
 ---
-- hosts: geoserverprimary
-
+- hosts: all
   tasks:
     - name: Instalar repositorio EPEL
       become: yes
@@ -70,24 +69,27 @@
         home: "/usr/share/geoserver"
         createhome: no
 
+
+- hosts: geoserverprimary
+  tasks:
     - name: Criar diretorio GEOSERVER_HOME
       become: yes
       file:
-        path: "{{ geoserver_home }}"
+        path: "{{ primary_geoserver_home }}"
         state: directory
         mode: 0755
 
     - name: Criar diretorio GEOWEBCACHE_CACHE_DIR
       become: yes
       file:
-        path: "{{ geoserver_geowebcache }}"
+        path: "{{ primary_geoserver_geowebcache }}"
         state: directory
         mode: 0755
 
     - name: Criar diretorio GEOSERVER_LOG_LOCATION
       become: yes
       file:
-        path: "{{ geoserver_log_location }}"
+        path: "{{ primary_geoserver_log_location }}"
         state: directory
         mode: 0755
 
@@ -102,14 +104,14 @@
       become: yes
       unarchive:
         src: "/tmp/data_dir.tar.gz"
-        dest: "{{ geoserver_shared }}"
+        dest: "{{ primary_geoserver_shared }}"
         remote_src: yes
 
     - name: Copiar configuracoes de controlflow
       become: yes
       copy:
         src: "files/controlflow.properties"
-        dest: "{{ geoserver_data_dir }}"
+        dest: "{{ primary_geoserver_data_dir }}"
         mode: 0755
 
     - name: Copiar GeoServer
@@ -123,7 +125,7 @@
       become: yes
       unarchive:
         src: "/tmp/geoserver.tar.gz"
-        dest: "{{ geoserver_home }}"
+        dest: "{{ primary_geoserver_home }}"
         extra_opts: [--strip-components=1]
         remote_src: yes
 
@@ -131,31 +133,31 @@
       become: yes
       copy:
         src: "files/log4j.properties"
-        dest: "{{ geoserver_home }}/resources/log4j.properties"
+        dest: "{{ primary_geoserver_home }}/resources/log4j.properties"
         mode: 0755
 
     - name: Copiar web.xml
       become: yes
       template:
-        src: "templates/web.xml.j2"
-        dest: "{{ geoserver_home }}/webapps/geoserver/WEB-INF/web.xml"
+        src: "templates/cluster/primary/web.xml.j2"
+        dest: "{{ primary_geoserver_home }}/webapps/geoserver/WEB-INF/web.xml"
 
     - name: Copiar start.ini
       become: yes
       template:
-        src: "templates/start.ini.j2"
-        dest: "{{ geoserver_home }}/start.ini"
+        src: "templates/cluster/primary/start.ini.j2"
+        dest: "{{ primary_geoserver_home }}/start.ini"
 
     - name: Copiar startup.sh
       become: yes
       template:
-        src: "templates/startup.sh.j2"
-        dest: "{{ geoserver_home }}/bin/startup.sh"
+        src: "templates/cluster/primary/startup.sh.j2"
+        dest: "{{ primary_geoserver_home }}/bin/startup.sh"
 
     - name: Alterar ownership diretorios de dados GeoServer
       become: yes
       file:
-        path: "{{ geoserver_shared }}"
+        path: "{{ primary_geoserver_shared }}"
         owner: geoserver
         group: geoserver
         mode: "u+rwx,g+rx,o=rx"
@@ -165,7 +167,7 @@
     - name: Alterar ownership diretorios de instalacao GeoServer
       become: yes
       file:
-        path: "{{ geoserver_home }}"
+        path: "{{ primary_geoserver_home }}"
         owner: geoserver
         group: geoserver
         mode: "u+rwx,g+rx,o=rx"
@@ -175,7 +177,7 @@
     - name: Copiar geoserver service da maquina local para servidor
       become: yes
       template:
-        src: "templates/geoserver.service.j2"
+        src: "templates/cluster/primary/geoserver.service.j2"
         dest: "/etc/systemd/system/geoserverprimary.service"
 
     - name: Habilitar geoserver service
@@ -185,3 +187,180 @@
         state: started
         enabled: true
         daemon_reload: true
+
+
+- hosts: geoserversecundary
+  handlers:
+    - name: restart nginx
+      become: yes
+      systemd:
+        name: nginx
+        state: restarted
+
+  tasks:
+    - name: Criar diretorio GEOSERVER_HOME
+      become: yes
+      file:
+        path: "{{ secundary_geoserver_home }}_{{ item }}"
+        state: directory
+        mode: 0755
+      with_items: "{{ secundary_geoserver_nodes_jetty_ports }}"
+
+    - name: Criar diretorio GEOWEBCACHE_CACHE_DIR
+      become: yes
+      file:
+        path: "{{ secundary_geoserver_geowebcache }}"
+        state: directory
+        mode: 0755
+
+    - name: Criar diretorio GEOSERVER_LOG_LOCATION
+      become: yes
+      file:
+        path: "{{ secundary_geoserver_log_location }}"
+        state: directory
+        mode: 0755
+
+    - name: Copiar GEOSERVER_DATA_DIR
+      become: yes
+      copy:
+        src: "files/data_dir.tar.gz"
+        dest: "/tmp/data_dir.tar.gz"
+        mode: 0755
+
+    - name: Descompactar GEOSERVER_DATA_DIR
+      become: yes
+      unarchive:
+        src: "/tmp/data_dir.tar.gz"
+        dest: "{{ secundary_geoserver_shared }}"
+        remote_src: yes
+
+    - name: Copiar configuracoes de controlflow
+      become: yes
+      copy:
+        src: "files/controlflow.properties"
+        dest: "{{ secundary_geoserver_data_dir }}"
+        mode: 0755
+
+    - name: Copiar GeoServer
+      become: yes
+      copy:
+        src: "files/geoserver.tar.gz"
+        dest: "/tmp/geoserver.tar.gz"
+        mode: 0755
+
+    - name: Descompactar GeoServer
+      become: yes
+      unarchive:
+        src: "/tmp/geoserver.tar.gz"
+        dest: "{{ secundary_geoserver_home }}_{{ item }}"
+        extra_opts: [--strip-components=1]
+        remote_src: yes
+      with_items: "{{ secundary_geoserver_nodes_jetty_ports }}"
+
+    - name: Copiar configuracoes de log
+      become: yes
+      copy:
+        src: "files/log4j.properties"
+        dest: "{{ secundary_geoserver_home }}_{{ item }}/resources/log4j.properties"
+        mode: 0755
+      with_items: "{{ secundary_geoserver_nodes_jetty_ports }}"
+
+    - name: Copiar web.xml
+      become: yes
+      template:
+        src: "templates/cluster/secundary/web.xml.j2"
+        dest: "{{ secundary_geoserver_home }}_{{ item }}/webapps/geoserver/WEB-INF/web.xml"
+      with_items: "{{ secundary_geoserver_nodes_jetty_ports }}"
+
+    - name: Copiar start.ini
+      become: yes
+      template:
+        src: "templates/cluster/secundary/start.ini.j2"
+        dest: "{{ secundary_geoserver_home }}_{{ item }}/start.ini"
+      with_items: "{{ secundary_geoserver_nodes_jetty_ports }}"
+
+    - name: Copiar startup.sh
+      become: yes
+      template:
+        src: "templates/cluster/secundary/startup.sh.j2"
+        dest: "{{ secundary_geoserver_home }}_{{ item }}/bin/startup.sh"
+      with_items: "{{ secundary_geoserver_nodes_jetty_ports }}"
+
+    - name: Alterar ownership diretorios de dados GeoServer
+      become: yes
+      file:
+        path: "{{ secundary_geoserver_shared }}"
+        owner: geoserver
+        group: geoserver
+        mode: "u+rwx,g+rx,o=rx"
+        recurse: yes
+        state: directory
+
+    - name: Alterar ownership diretorios de instalacao GeoServer
+      become: yes
+      file:
+        path: "{{ secundary_geoserver_home }}_{{ item }}"
+        owner: geoserver
+        group: geoserver
+        mode: "u+rwx,g+rx,o=rx"
+        recurse: yes
+        state: directory
+      with_items: "{{ secundary_geoserver_nodes_jetty_ports }}"
+
+    - name: Copiar geoserver service da maquina local para servidor
+      become: yes
+      template:
+        src: "templates/cluster/secundary/geoserver.service.j2"
+        dest: "/etc/systemd/system/geoserversecundary_{{ item }}.service"
+      with_items: "{{ secundary_geoserver_nodes_jetty_ports }}"
+
+    - name: Habilitar geoserver service
+      become: yes
+      systemd:
+        name: "geoserversecundary_{{ item }}"
+        state: started
+        enabled: true
+        daemon_reload: true
+      with_items: "{{ secundary_geoserver_nodes_jetty_ports }}"
+
+    - name: Instalar NGINX
+      become: yes
+      yum:
+        name:
+          - nginx
+        state: present
+
+    - name: Backup nginx.conf
+      become: yes
+      copy:
+        src: "/etc/nginx/nginx.conf"
+        dest: "/etc/nginx/backup.nginx.conf"
+        remote_src: yes
+
+    - name: Habilitar nginx service
+      become: yes
+      systemd:
+        name: nginx
+        state: started
+        enabled: true
+        daemon_reload: true
+
+    - name: Configurar CentOS para possibilitar proxy_pass upstream
+      become: yes
+      command: setsebool -P httpd_can_network_connect 1
+      ignore_errors: yes
+
+    - name: Criar diretorio logs NGINX
+      become: yes
+      file:
+        path: "{{ secundary_nginx_log_location }}"
+        state: directory
+        mode: 0755
+
+    - name: Copiar configuracao NGINX
+      become: yes
+      template:
+        src: "templates/loadbalancer/nginx.conf.j2"
+        dest: "/etc/nginx/nginx.conf"
+      notify:
+        - restart nginx

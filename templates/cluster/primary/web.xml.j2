@@ -51,17 +51,17 @@
 
     <context-param>
         <param-name>GEOSERVER_DATA_DIR</param-name>
-        <param-value>{{ geoserver_data_dir }}</param-value>
+        <param-value>{{ primary_geoserver_data_dir }}</param-value>
     </context-param>
 
     <context-param>
         <param-name>GEOWEBCACHE_CACHE_DIR</param-name>
-        <param-value>{{ geoserver_geowebcache }}</param-value>
+        <param-value>{{ primary_geoserver_geowebcache }}</param-value>
     </context-param>
 
     <context-param>
         <param-name>GEOSERVER_LOG_LOCATION</param-name>
-        <param-value>{{ geoserver_log_name }}</param-value>
+        <param-value>{{ primary_geoserver_log_name }}</param-value>
     </context-param>
 
     <!-- pick up all spring application contexts -->
