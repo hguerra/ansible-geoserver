@@ -188,6 +188,46 @@
         enabled: true
         daemon_reload: true
 
+    - name: Instalar Rsync
+      become: yes
+      yum:
+        name:
+          - rsync
+        state: present
+
+    - name: Criar diretorio Rsync
+      become: yes
+      file:
+        path: "{{ primary_rsync_config }}"
+        state: directory
+        mode: 0755
+
+    - name: Copiar chave SSH Rsync
+      become: yes
+      copy:
+        src: "keys/rsync/rsync_key.pub"
+        dest: "{{ primary_rsync_config }}"
+        mode: 0755
+
+    - name: Alterar ownership diretorios Rsync
+      become: yes
+      file:
+        path: "{{ primary_rsync_config }}"
+        owner: geoserver
+        group: geoserver
+        mode: "u+rwx,g+rx,o=rx"
+        recurse: yes
+        state: directory
+
+    - name: Add rsync_key.pub em /root/.ssh/authorized_keys
+      become: yes
+      shell: >
+        mkdir -p /root/.ssh
+        && chmod 700 /root/.ssh
+        && touch /root/.ssh/authorized_keys
+        && chmod 600 /root/.ssh/authorized_keys
+        && cat {{ primary_rsync_config }}/rsync_key.pub >> /root/.ssh/authorized_keys
+
 
 - hosts: geoserversecundary
   handlers:
@@ -364,3 +404,45 @@
         dest: "/etc/nginx/nginx.conf"
       notify:
         - restart nginx
+
+    - name: Instalar Rsync
+      become: yes
+      yum:
+        name:
+          - rsync
+        state: present
+
+    - name: Criar diretorio Rsync
+      become: yes
+      file:
+        path: "{{ secundary_rsync_config }}"
+        state: directory
+        mode: 0755
+
+    - name: Copiar chave SSH Rsync
+      become: yes
+      copy:
+        src: "keys/rsync/rsync_key"
+        dest: "{{ secundary_rsync_config }}"
+        mode: 0755
+
+    - name: Copiar script bash para rodar crontab Rsync
+      become: yes
+      template:
+        src: "templates/cluster/secundary/crontab_sync_data_dir.sh.j2"
+        dest: "{{ secundary_rsync_config }}/crontab_sync_data_dir.sh"
+
+    - name: Alterar ownership diretorios Rsync
+      become: yes
+      file:
+        path: "{{ secundary_rsync_config }}"
+        owner: geoserver
+        group: geoserver
+        mode: "u+rwx,g+rx,o=rx"
+        recurse: yes
+        state: directory
+
+    - name: Add crontab para sincronizar pastas */30 * * * * (a cada 30 minutos)"
+      become: yes
+      shell: >
+        echo "*/30 * * * * root bash {{ secundary_rsync_config }}/crontab_sync_data_dir.sh" >> /etc/crontab

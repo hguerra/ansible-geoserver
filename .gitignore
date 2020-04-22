@@ -1,3 +1,4 @@
 .vagrant
 keys/*/*_key
+keys/*/*_key.pub
 files/*.tar.gz

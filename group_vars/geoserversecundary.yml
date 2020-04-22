@@ -1,10 +1,14 @@
 ---
+primary_geoserver_host_ip: 192.168.99.99
+secundary_geoserver_user: admin
+secundary_geoserver_password: geoserver
 secundary_geoserver_shared: /var/local/geoserver
 secundary_geoserver_data_dir: /var/local/geoserver/data_dir
 secundary_geoserver_geowebcache: /var/local/geoserver/geowebcache/gwc
 secundary_geoserver_log_location: /var/local/geoserver/logs
 secundary_geoserver_options: -Xms128M -Xmx756M
 secundary_nginx_log_location: /var/local/nginx/logs
+secundary_rsync_config: /var/local/rsync
 
 secundary_geoserver_nodes_jetty_ports: [8081, 8082]
 secundary_geoserver_home: /usr/local/geoserver/secundary 

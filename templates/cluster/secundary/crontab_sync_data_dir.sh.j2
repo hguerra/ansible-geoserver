@@ -1,0 +1,8 @@
+#!/bin/sh
+
+/usr/bin/rsync -avz -e "ssh -i {{ secundary_rsync_config }}/rsync_key" root@{{ primary_geoserver_host_ip }}:{{ secundary_geoserver_data_dir }}/ {{ secundary_geoserver_data_dir }}/
+/usr/bin/rsync -avz -e "ssh -i {{ secundary_rsync_config }}/rsync_key" root@{{ primary_geoserver_host_ip }}:{{ secundary_geoserver_geowebcache }}/ {{ secundary_geoserver_geowebcache }}/
+
+{% for port in secundary_geoserver_nodes_jetty_ports %}
+curl -u {{ secundary_geoserver_user }}:{{ secundary_geoserver_password }} -XPUT http://localhost:{{port}}/geoserver/rest/reload
+{% endfor %}
