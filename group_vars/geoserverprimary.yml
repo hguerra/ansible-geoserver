@@ -3,7 +3,7 @@ primary_geoserver_shared: /var/local/geoserver
 primary_geoserver_data_dir: /var/local/geoserver/data_dir
 primary_geoserver_geowebcache: /var/local/geoserver/geowebcache/gwc
 primary_geoserver_log_location: /var/local/geoserver/logs
-primary_geoserver_options: -Xms128M -Xmx756M
+primary_geoserver_options: -Xms768M -Xmx2048M
 primary_rsync_config: /var/local/rsync
 
 primary_geoserver_home: /usr/local/geoserver/primary
