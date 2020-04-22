@@ -2,3 +2,6 @@
 jetty_threads_min: 20
 jetty_threads_max: 50
 jetty_threads_timeout: 60000
+nginx_log_location: /var/local/nginx/logs
+rsync_config: /var/local/rsync
+

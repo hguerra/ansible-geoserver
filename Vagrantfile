@@ -43,6 +43,10 @@ Vagrant.configure("2") do |config|
     m.vm.network "private_network", ip: "192.168.99.98"
   end
 
+  config.vm.define "geoserversingle" do |m|
+    m.vm.network "private_network", ip: "192.168.99.97"
+  end
+
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
   # your network.
